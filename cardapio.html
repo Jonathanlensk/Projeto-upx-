@@ -1,0 +1,172 @@
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="cardapio.css">
+        <title>Cardápio - FastPizza</title>
+    </head>
+
+    <body>
+        <main>
+            <div class="menu">
+                <h1>Cardápio</h1>
+            </div>
+
+            <div class="bttns">
+                <a href="#"><button class="bttnsStyle">PIZZA TRADICIONAL</button></a>
+                <a href="#"><button class="bttnsStyle">PIZZA DOCE</button></a>
+                <a href="#"><button class="bttnsStyle">BEBIDAS</button></a>
+            </div>
+
+            <section class="pizzasSection">
+                <div>
+                    <h2>Pizza Tradicional:</h2>
+                </div>
+
+                <hr>
+
+                <div class="pizzaTitle">
+                    <h3>Pizza de Quatro Queijos - Grande</h3>
+                    <h3 class="priceStyle">R$45,90</h3>
+                </div>
+
+                <div class="pizzaDetails">
+                    <p><b>Ingredientes:</b> Uma combinação harmoniosa de muçarela, gorgonzola, parmesão e provolone sobre uma
+                        massa artesanal fermentada naturalmente. Cada fatia é uma celebração de sabores intensos e texturas
+                        cremosas, finalizada com manjericão para um toque clássico.</p>
+                    <img class="pizzaImg" src="assets/pizza-1.png" alt="">
+                    <a href="#" class="add-to-cart" data-name="Pizza de Quatro Queijos - Grande" data-price="45.90"><img width="38px" src="assets/add-button.png" alt="Adicionar"></a>
+                </div>
+
+                <hr>
+
+                <div class="pizzaTitle">
+                    <h3>Pizza de Frango com Catupiry - Grande</h3>
+                    <h3 class="priceStyle">R$42,90</h3>
+                </div>
+
+                <div class="pizzaDetails">
+                    <p><b>Ingredientes:</b> Deliciosa massa coberta com molho marinara, frango desfiado
+                        suculento, milho doce, muçarela derretida e o inconfundível Catupiry brasileiro. Esta pizza oferece
+                        uma combinação perfeita de sabores, equilibrando o salgado do frango com a cremosidade do queijo.</p>
+                    <img class="pizzaImg" src="assets/pizza-2.png" alt="">
+                    <a href="#" class="add-to-cart" data-name="Pizza de Frango com Catupiry - Grande" data-price="42.90"><img width="38px" src="assets/add-button.png" alt="Adicionar"></a>
+                </div>
+
+                <hr>
+
+                <div class="pizzaTitle">
+                    <h3>Pizza Marguerita - Grande</h3>
+                    <h3 class="priceStyle">R$43,90</h3>
+                </div>
+
+                <div class="pizzaDetails">
+                    <p><b>Ingredientes:</b> A essência da culinária italiana em uma pizza, com molho de tomate San Marzano,
+                        muçarela fresca, manjericão e um fio de azeite de oliva extra-virgem. Simples, mas profundamente
+                        saborosa, cada ingrediente é escolhido para celebrar os sabores tradicionais da Itália.</p>
+                    <img class="pizzaImg" src="assets/pizza-3.png" alt="">
+                    <a href="#" class="add-to-cart" data-name="Pizza Marguerita - Grande" data-price="43.90"><img width="38px" src="assets/add-button.png" alt="Adicionar"></a>
+                </div>
+
+                <hr>
+            </section>
+
+            <aside class="cart">
+                <h2><img class="carrinho-1" src="assets/carrinho-1.png" alt="Ícone do carrinho" width="43"> Carrinho</h2>
+                <div id="cart-items"></div>
+                <div class="total">
+                    <strong>Total Produtos: R$ <span id="total">0.00</span></strong>
+                </div>
+                <div class="calculate-frete">
+                    <label for="frete">CEP</label>
+                    <input type="text" id="frete" placeholder="Calcular frete">
+                    <button onclick="calcularFrete()">calcular frete</button>
+                </div>
+                <div class="frete">
+                    <strong>Total Compra (Frete Incluso): R$ <span id="totalComFrete">0.00</span></strong>
+                </div>
+                <button id="finalizarCompra" disabled onclick="finalizarCompra()">FINALIZAR COMPRA</button>
+            </aside>
+        </main>
+
+        <script>
+            let cart = [];
+
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', event => {
+                    event.preventDefault();
+                    const name = button.getAttribute('data-name');
+                    const price = parseFloat(button.getAttribute('data-price'));
+                    addToCart(name, price);
+                });
+            });
+
+            function addToCart(name, price) {
+                const item = cart.find(i => i.name === name);
+                if (item) {
+                    item.quantity += 1;
+                } else {
+                    cart.push({ name, price, quantity: 1 });
+                }
+                updateCart();
+            }
+
+            function updateCart() {
+                const cartItems = document.getElementById('cart-items');
+                cartItems.innerHTML = '';
+                let total = 0;
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+                    cartItems.innerHTML += `
+                        <div class="cart-item">
+                            <span>${item.name}</span>
+                            <div>
+                                <button onclick="changeQuantity('${item.name}', -1)">-</button>
+                                <span>${item.quantity}</span>
+                                <button onclick="changeQuantity('${item.name}', 1)">+</button>
+                                <span>R$ ${itemTotal.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('total').innerText = total.toFixed(2);
+                document.getElementById('totalComFrete').innerText = total.toFixed(2);
+                document.getElementById('finalizarCompra').disabled = total === 0;
+            }
+
+            function changeQuantity(name, change) {
+                const item = cart.find(i => i.name === name);
+                if (item) {
+                    item.quantity += change;
+                    if (item.quantity <= 0) {
+                        cart = cart.filter(i => i.name !== name);
+                    }
+                    updateCart();
+                }
+            }
+
+            function calcularFrete() {
+                const totalElement = document.getElementById('total');
+                const totalComFreteElement = document.getElementById('totalComFrete');
+
+                const total = parseFloat(totalElement.innerText);
+                const frete = 10.00; 
+
+                const totalComFrete = total + frete;
+                totalComFreteElement.innerText = totalComFrete.toFixed(2);
+                document.getElementById('finalizarCompra').disabled = false;
+            }
+
+            function finalizarCompra() {
+                alert('Compra finalizada com sucesso!');
+            }
+        </script>
+    </body>
+
+    </html>
